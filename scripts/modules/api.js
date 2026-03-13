@@ -1,13 +1,11 @@
 // ===============================
-// 🔗 BASE URL (EDIT THIS ONLY)
+// 🔗 BASE URL (Cloudflare Pages Functions)
 // ===============================
-// Cloudflare Pages Functions automatically live at:
-// https://your-domain.com/.netlify/functions/<file>
-// BUT Cloudflare uses:
-// https://your-domain.com/api/<file>
+// Cloudflare automatically serves your functions at:
+// https://your-domain.com/api/<function>
 //
-// So your base is simply your domain + "/api"
-export const API_BASE = "https://your-domain.com/api";
+// So the base is ALWAYS just "/api"
+export const API_BASE = "/api";
 
 
 // ===============================
