@@ -5,25 +5,52 @@
   <title>Belt Hub – Ride History</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
+
   <script type="module">
     import { getSession } from "./modules/auth.js";
+    import { getRides } from "./modules/indexedDB.js";
 
-    // placeholder for backend fetch
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", async () => {
       const user = getSession();
-      if (!user) window.location.href = "auth.html";
+      if (!user) {
+        window.location.href = "auth.html";
+        return;
+      }
 
-      // backend will replace this
-      document.getElementById("history-list").innerHTML =
-        `<p class="note">Loading your rides…</p>`;
+      const list = document.getElementById("history-list");
+
+      // Load offline rides
+      const rides = await getRides();
+
+      if (!rides || rides.length === 0) {
+        list.innerHTML = `<p class="note">No rides yet.</p>`;
+        return;
+      }
+
+      // Render rides
+      list.innerHTML = rides
+        .map(r => `
+          <div class="card" style="margin-bottom:12px;">
+            <p><strong>Bike:</strong> #${r.bikeId}</p>
+            <p><strong>Duration:</strong> ${r.duration}</p>
+            <p><strong>Cost:</strong> $${r.cost}</p>
+            <p class="note">${new Date(r.timestamp).toLocaleString()}</p>
+          </div>
+        `)
+        .join("");
     });
   </script>
 </head>
+
 <body>
   <div id="app">
     <section class="page">
       <h2 class="title">Ride History</h2>
-      <div id="history-list" class="card"></div>
+
+      <div id="history-list" class="card">
+        <p class="note">Loading your rides…</p>
+      </div>
+
       <a class="btn text as-link" href="home.html">Back</a>
     </section>
   </div>
