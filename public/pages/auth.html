@@ -2,27 +2,42 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Belt Hub – Sign in</title>
+  <title>Belt Hub – Auth</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="/styles/style.css" />
-  <script defer type="module" src="/scripts/app.js"></script>
+  <script defer type="module" src="/scripts/auth.js"></script>
 </head>
 <body data-page="auth">
   <div id="app">
     <section class="page" id="page-auth">
-      <h2 class="title">Sign in or create account</h2>
+
+      <h2 class="title" id="auth-title">Loading…</h2>
+
       <div class="card">
         <label class="field">
           <span>Email</span>
-          <input type="email" id="auth-email" />
+          <input type="email" id="auth-email" autocomplete="email" />
         </label>
+
         <label class="field">
           <span>Password</span>
-          <input type="password" id="auth-password" />
+          <input type="password" id="auth-password" autocomplete="current-password" />
         </label>
-        <button class="btn primary" id="btn-login">Continue</button>
+
+        <!-- Only visible in signup mode -->
+        <div id="signup-extra" style="display:none;">
+          <label class="field">
+            <span>Full Name</span>
+            <input type="text" id="auth-name" autocomplete="name" />
+          </label>
+        </div>
+
+        <button class="btn primary" id="btn-auth">Continue</button>
       </div>
+
+      <a class="btn text as-link" id="switch-link"></a>
       <a class="btn text as-link" href="welcome.html">Back</a>
+
     </section>
   </div>
 </body>
