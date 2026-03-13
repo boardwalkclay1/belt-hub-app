@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Belt Hub – Settings</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+  <script type="module">
+    import { logout, getSession } from "./modules/auth.js";
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const user = getSession();
+      if (!user) window.location.href = "auth.html";
+
+      document.getElementById("user-email").textContent = user.email;
+
+      document.getElementById("btn-logout").addEventListener("click", () => {
+        logout();
+        window.location.href = "welcome.html";
+      });
+    });
+  </script>
+</head>
+<body>
+  <div id="app">
+    <section class="page">
+      <h2 class="title">Settings</h2>
+
+      <div class="card">
+        <p><strong>Email:</strong> <span id="user-email"></span></p>
+      </div>
+
+      <button class="btn danger" id="btn-logout">Log Out</button>
+      <a class="btn text as-link" href="home.html">Back</a>
+    </section>
+  </div>
+</body>
+</html>
