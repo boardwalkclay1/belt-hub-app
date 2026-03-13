@@ -4,11 +4,11 @@
   <meta charset="UTF-8" />
   <title>Belt Hub – Ride History</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="/styles/style.css" />
 
   <script type="module">
-    import { getSession } from "./modules/auth.js";
-    import { getRides } from "./modules/indexedDB.js";
+    import { getSession } from "/scripts/modules/auth.js";
+    import { getRides } from "/scripts/modules/indexedDB.js";
 
     document.addEventListener("DOMContentLoaded", async () => {
       const user = getSession();
@@ -19,7 +19,6 @@
 
       const list = document.getElementById("history-list");
 
-      // Load offline rides
       const rides = await getRides();
 
       if (!rides || rides.length === 0) {
@@ -27,7 +26,6 @@
         return;
       }
 
-      // Render rides
       list.innerHTML = rides
         .map(r => `
           <div class="card" style="margin-bottom:12px;">
