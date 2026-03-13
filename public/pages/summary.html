@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Belt Hub – Ride Summary</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="/styles/style.css" />
 </head>
 
 <body data-page="summary">
@@ -34,7 +34,6 @@
       document.getElementById("summary-cost").textContent = data.cost.toFixed(2);
       document.getElementById("summary-return").textContent = data.returned.toFixed(2);
 
-      // Backend sync will replace this
       document.getElementById("sync-status").textContent = "Ready for backend sync.";
     });
   </script>
