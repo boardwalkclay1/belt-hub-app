@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Belt Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- 1. WELCOME -->
+    <section class="page" id="page-welcome">
+      <div class="logo-badge">Belt Hub</div>
+      <h1 class="title">Ride the Belt</h1>
+      <p class="subtitle">Scan. Ride. Return. Simple.</p>
+      <button class="btn primary" data-go="page-auth">Get Started</button>
+      <button class="btn ghost" data-go="page-auth">I already have an account</button>
+    </section>
+
+    <!-- 2. AUTH (LOGIN / REGISTER) -->
+    <section class="page hidden" id="page-auth">
+      <h2 class="title">Sign in or create account</h2>
+      <div class="card">
+        <label class="field">
+          <span>Email</span>
+          <input type="email" id="auth-email" />
+        </label>
+        <label class="field">
+          <span>Password</span>
+          <input type="password" id="auth-password" />
+        </label>
+        <button class="btn primary" id="btn-login">Continue</button>
+      </div>
+      <button class="btn text" data-go="page-welcome">Back</button>
+    </section>
+
+    <!-- 3. HOME / START RIDE -->
+    <section class="page hidden" id="page-home">
+      <h2 class="title">Belt Hub</h2>
+      <p class="subtitle">Bikes near you: <span id="bike-count">12</span></p>
+
+      <div class="bubble-stack">
+        <button class="bubble main" data-go="page-qr">
+          Start Ride
+        </button>
+        <button class="bubble" data-go="page-history">
+          My Rides
+        </button>
+        <button class="bubble" data-go="page-payment">
+          Payment
+        </button>
+        <button class="bubble" data-go="page-help">
+          Help
+        </button>
+      </div>
+    </section>
+
+    <!-- 4. QR SCAN BIKE -->
+    <section class="page hidden" id="page-qr">
+      <h2 class="title">Scan your bike</h2>
+      <p class="subtitle">Point your camera at the QR code on the bike.</p>
+
+      <div class="card qr-card">
+        <div class="qr-placeholder">
+          Camera preview here
+        </div>
+        <p class="note">
+          When we detect a bike, we’ll show its ID and ask you to confirm.
+        </p>
+      </div>
+
+      <button class="btn primary" id="btn-mock-scan">Mock scan bike #14</button>
+      <button class="btn text" data-go="page-home">Cancel</button>
+    </section>
+
+    <!-- 5. ACTIVE RIDE -->
+    <section class="page hidden" id="page-ride">
+      <h2 class="title">You’re riding</h2>
+      <p class="subtitle">Bike <span id="ride-bike-id">#14</span></p>
+
+      <div class="timer-ring">
+        <div class="timer-time" id="ride-timer">00:00:00</div>
+      </div>
+      <p class="note">
+        $25 per hour. A $100 deposit is held until you end your ride.
+      </p>
+
+      <button class="btn danger" id="btn-end-ride">End Ride</button>
+    </section>
+
+    <!-- 6. END RIDE / SUMMARY -->
+    <section class="page hidden" id="page-summary">
+      <h2 class="title">Ride summary</h2>
+      <div class="card">
+        <p><strong>Bike:</strong> <span id="summary-bike-id">#14</span></p>
+        <p><strong>Duration:</strong> <span id="summary-duration">00:32:15</span></p>
+        <p><strong>Cost:</strong> $<span id="summary-cost">13.40</span></p>
+        <p><strong>Deposit held:</strong> $100.00</p>
+        <p><strong>Deposit returned:</strong> $<span id="summary-return">86.60</span></p>
+      </div>
+      <button class="btn primary" data-go="page-home">Done</button>
+    </section>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
