@@ -5,7 +5,6 @@
   <title>Belt Hub – Scan Bike</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
-  <script defer src="app.js"></script>
 </head>
 <body data-page="qr">
   <div id="app">
@@ -14,9 +13,9 @@
       <p class="subtitle">Point your camera at the QR code on the bike.</p>
 
       <div class="card qr-card">
-        <div class="qr-placeholder">
-          Camera preview here
-        </div>
+        <!-- REAL CAMERA PREVIEW -->
+        <video id="qr-video" class="qr-video" playsinline></video>
+
         <p class="note">
           When we detect a bike, we’ll show its ID and ask you to confirm.
         </p>
@@ -26,5 +25,48 @@
       <a class="btn text as-link" href="home.html">Cancel</a>
     </section>
   </div>
+
+  <script type="module">
+    import { startCamera, stopCamera, decodeFrame } from "./modules/qr.js";
+    import { go } from "./modules/ui.js";
+
+    const video = document.getElementById("qr-video");
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      // Start camera
+      const cam = await startCamera(video);
+      if (!cam.ok) {
+        localStorage.setItem("errorMessage", cam.error);
+        go("error");
+        return;
+      }
+
+      // Scan loop (placeholder until backend QR decode)
+      async function scanLoop() {
+        const result = await decodeFrame(video);
+
+        if (result) {
+          stopCamera();
+          localStorage.setItem("scannedBike", result.bikeId);
+          go("ride");
+          return;
+        }
+
+        requestAnimationFrame(scanLoop);
+      }
+
+      scanLoop();
+    });
+
+    // Mock scan button
+    document.getElementById("btn-mock-scan").addEventListener("click", () => {
+      stopCamera();
+      localStorage.setItem("scannedBike", 14);
+      go("ride");
+    });
+
+    // Stop camera when leaving
+    window.addEventListener("beforeunload", stopCamera);
+  </script>
 </body>
 </html>
