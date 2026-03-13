@@ -1,4 +1,4 @@
-import { api } from "./modules/api.js";
+import { api } from "/scripts/modules/api.js";
 
 const pages = document.querySelectorAll(".page");
 
