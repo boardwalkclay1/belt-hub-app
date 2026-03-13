@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Belt Hub – Offline</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      function check() {
+        if (navigator.onLine) window.location.href = "home.html";
+      }
+      setInterval(check, 1500);
+    });
+  </script>
+</head>
+<body>
+  <div id="app">
+    <section class="page">
+      <h2 class="title">You're Offline</h2>
+      <p class="subtitle">We’ll reconnect you automatically.</p>
+
+      <div class="card">
+        <p class="note">If you are riding, your timer is still running locally.</p>
+      </div>
+
+      <button class="btn primary" onclick="location.reload()">Try Again</button>
+    </section>
+  </div>
+</body>
+</html>
