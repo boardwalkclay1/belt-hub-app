@@ -1,3 +1,6 @@
+// app.js (Worker-connected version)
+import { api } from "./modules/api.js";
+
 const pages = document.querySelectorAll(".page");
 
 function showPage(id) {
@@ -14,30 +17,31 @@ document.addEventListener("click", e => {
   }
 });
 
-// fake auth
-document.getElementById("btn-login").addEventListener("click", () => {
-  // later: validate + call API
-  showPage("page-home");
-});
+// ===== AUTH =====
+const loginBtn = document.getElementById("btn-login");
+if (loginBtn) {
+  loginBtn.addEventListener("click", async () => {
+    const emailEl = document.getElementById("auth-email");
+    const passEl = document.getElementById("auth-password");
 
-// mock bike scan
+    const email = emailEl ? emailEl.value.trim() : "";
+    const password = passEl ? passEl.value.trim() : "";
+
+    const res = await api("/auth/login", "POST", { email, password });
+
+    if (res.ok) {
+      localStorage.setItem("user", JSON.stringify(res.user));
+      showPage("page-home");
+    } else {
+      alert(res.error || "Login failed");
+    }
+  });
+}
+
+// ===== RIDE STATE =====
 let currentBikeId = null;
-document.getElementById("btn-mock-scan").addEventListener("click", () => {
-  currentBikeId = "#14";
-  document.getElementById("ride-bike-id").textContent = currentBikeId;
-  startRide();
-  showPage("page-ride");
-});
-
-// ride timer
 let rideStart = null;
 let rideTimerInterval = null;
-
-function startRide() {
-  rideStart = new Date();
-  if (rideTimerInterval) clearInterval(rideTimerInterval);
-  rideTimerInterval = setInterval(updateRideTimer, 1000);
-}
 
 function updateRideTimer() {
   if (!rideStart) return;
@@ -50,33 +54,86 @@ function updateRideTimer() {
   document.getElementById("ride-timer").textContent = `${h}:${m}:${s}`;
 }
 
-document.getElementById("btn-end-ride").addEventListener("click", () => {
-  if (!rideStart) return;
-  clearInterval(rideTimerInterval);
+async function startRideOnBackend() {
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+  if (!user) {
+    alert("Not logged in");
+    showPage("page-welcome");
+    return false;
+  }
 
-  const end = new Date();
-  const diffMs = end - rideStart;
-  const minutes = diffMs / 60000;
-  const hours = minutes / 60;
-  const rate = 25;
-  const deposit = 100;
+  const res = await api("/rentals/start", "POST", {
+    userId: user.id,
+    bikeId: currentBikeId,
+    startTime: Date.now()
+  });
 
-  const cost = +(rate * hours).toFixed(2);
-  const returned = +(deposit - cost).toFixed(2);
+  if (!res.ok) {
+    alert(res.error || "Could not start ride");
+    return false;
+  }
 
-  const totalSeconds = Math.floor(diffMs / 1000);
-  const h = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
-  const m = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
-  const s = String(totalSeconds % 60).padStart(2, "0");
-  const durationStr = `${h}:${m}:${s}`;
+  rideStart = new Date();
+  if (rideTimerInterval) clearInterval(rideTimerInterval);
+  rideTimerInterval = setInterval(updateRideTimer, 1000);
+  return true;
+}
 
-  document.getElementById("summary-bike-id").textContent = currentBikeId || "#?";
-  document.getElementById("summary-duration").textContent = durationStr;
-  document.getElementById("summary-cost").textContent = cost.toFixed(2);
-  document.getElementById("summary-return").textContent = Math.max(returned, 0).toFixed(2);
+// ===== MOCK SCAN (NOW HITS WORKER) =====
+const mockScanBtn = document.getElementById("btn-mock-scan");
+if (mockScanBtn) {
+  mockScanBtn.addEventListener("click", async () => {
+    const res = await api("/bikes/scan", "POST", { qr: "14" });
 
-  showPage("page-summary");
-});
+    if (!res.ok) {
+      alert(res.error || "Bike not available");
+      return;
+    }
+
+    currentBikeId = res.bikeId; // e.g. 14
+    document.getElementById("ride-bike-id").textContent = `#${currentBikeId}`;
+
+    const started = await startRideOnBackend();
+    if (started) {
+      showPage("page-ride");
+    }
+  });
+}
+
+// ===== END RIDE (NOW HITS WORKER) =====
+const endRideBtn = document.getElementById("btn-end-ride");
+if (endRideBtn) {
+  endRideBtn.addEventListener("click", async () => {
+    if (!rideStart) return;
+    clearInterval(rideTimerInterval);
+
+    const user = JSON.parse(localStorage.getItem("user") || "null");
+    if (!user) {
+      alert("Not logged in");
+      showPage("page-welcome");
+      return;
+    }
+
+    const res = await api("/rentals/end", "POST", {
+      userId: user.id,
+      bikeId: currentBikeId,
+      endTime: Date.now()
+    });
+
+    if (!res.ok) {
+      alert(res.error || "Could not end ride");
+      return;
+    }
+
+    // Worker returns: bikeId, duration, cost, returned
+    document.getElementById("summary-bike-id").textContent = `#${res.bikeId}`;
+    document.getElementById("summary-duration").textContent = res.duration;
+    document.getElementById("summary-cost").textContent = res.cost.toFixed(2);
+    document.getElementById("summary-return").textContent = res.returned.toFixed(2);
+
+    showPage("page-summary");
+  });
+}
 
 // default
 showPage("page-welcome");
