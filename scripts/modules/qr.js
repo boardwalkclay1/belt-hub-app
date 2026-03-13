@@ -21,7 +21,6 @@ export function stopCamera() {
 
 // Placeholder for real QR decoding
 export async function decodeFrame(videoEl) {
-  // This is where your backend or a QR library will plug in.
-  // For now, return null until we integrate the real decoder.
+  // This is where your backend or QR library will plug in.
   return null;
 }
