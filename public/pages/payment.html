@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Belt Hub – Payment</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+  <script type="module">
+    import { getSession } from "./modules/auth.js";
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const user = getSession();
+      if (!user) window.location.href = "auth.html";
+
+      // backend will inject payment method status
+      document.getElementById("payment-status").textContent =
+        "Loading payment info…";
+    });
+  </script>
+</head>
+<body>
+  <div id="app">
+    <section class="page">
+      <h2 class="title">Payment Method</h2>
+
+      <div class="card">
+        <p id="payment-status">Loading…</p>
+        <button class="btn primary" id="btn-add-card">Add / Update Card</button>
+      </div>
+
+      <a class="btn text as-link" href="home.html">Back</a>
+    </section>
+  </div>
+</body>
+</html>
