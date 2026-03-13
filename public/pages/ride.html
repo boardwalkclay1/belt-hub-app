@@ -5,17 +5,18 @@
   <title>Belt Hub – Active Ride</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
-  <script defer src="app.js"></script>
 </head>
+
 <body data-page="ride">
   <div id="app">
     <section class="page" id="page-ride">
       <h2 class="title">You’re riding</h2>
-      <p class="subtitle">Bike <span id="ride-bike-id">#14</span></p>
+      <p class="subtitle">Bike <span id="ride-bike-id">#?</span></p>
 
       <div class="timer-ring">
         <div class="timer-time" id="ride-timer">00:00:00</div>
       </div>
+
       <p class="note">
         $25 per hour. A $100 deposit is held until you end your ride.
       </p>
@@ -23,5 +24,52 @@
       <button class="btn danger" id="btn-end-ride">End Ride</button>
     </section>
   </div>
+
+  <script type="module">
+    import { startRental, endRental, formatDuration } from "./modules/rental.js";
+    import { saveRide } from "./modules/indexedDB.js";
+    import { go } from "./modules/ui.js";
+
+    let timerInterval = null;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const bikeId = localStorage.getItem("scannedBike");
+      document.getElementById("ride-bike-id").textContent = `#${bikeId}`;
+
+      startRental(bikeId);
+
+      timerInterval = setInterval(() => {
+        const ms = Date.now() - JSON.parse(localStorage.getItem("activeRental")).start;
+        document.getElementById("ride-timer").textContent = formatDuration(ms);
+      }, 1000);
+    });
+
+    document.getElementById("btn-end-ride").addEventListener("click", async () => {
+      clearInterval(timerInterval);
+
+      const data = endRental();
+      const formatted = formatDuration(data.duration);
+
+      // Save offline
+      await saveRide({
+        bikeId: data.bikeId,
+        duration: formatted,
+        cost: data.cost,
+        returned: data.returned,
+        timestamp: Date.now(),
+        synced: false // backend will flip this to true
+      });
+
+      // Pass data to summary page
+      localStorage.setItem("lastRide", JSON.stringify({
+        bikeId: data.bikeId,
+        duration: formatted,
+        cost: data.cost,
+        returned: data.returned
+      }));
+
+      go("summary");
+    });
+  </script>
 </body>
 </html>
