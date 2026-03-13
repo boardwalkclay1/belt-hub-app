@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Belt Hub – Scan Bike</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="app.js"></script>
+</head>
+<body data-page="qr">
+  <div id="app">
+    <section class="page" id="page-qr">
+      <h2 class="title">Scan your bike</h2>
+      <p class="subtitle">Point your camera at the QR code on the bike.</p>
+
+      <div class="card qr-card">
+        <div class="qr-placeholder">
+          Camera preview here
+        </div>
+        <p class="note">
+          When we detect a bike, we’ll show its ID and ask you to confirm.
+        </p>
+      </div>
+
+      <button class="btn primary" id="btn-mock-scan">Mock scan bike #14</button>
+      <a class="btn text as-link" href="home.html">Cancel</a>
+    </section>
+  </div>
+</body>
+</html>
