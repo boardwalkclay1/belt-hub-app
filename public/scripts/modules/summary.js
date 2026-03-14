@@ -1,7 +1,8 @@
 import { api } from "/scripts/modules/api.js";
+import { getSession } from "/scripts/auth.js";
 
 document.getElementById("btn-end-ride").addEventListener("click", async () => {
-  const user = JSON.parse(localStorage.getItem("beltHubUser"));
+  const user = getSession();
   const bikeId = localStorage.getItem("currentBikeId");
 
   const res = await api("/rentals-end", "POST", {
