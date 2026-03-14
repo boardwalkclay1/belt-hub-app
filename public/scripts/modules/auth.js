@@ -1,6 +1,19 @@
-// /scripts/auth.js (module)
+// /scripts/auth.js
+// Pure localStorage mock auth module
 
 const STORAGE_KEY = "beltHubUser";
+
+/* ---------------------------
+   HELPERS
+---------------------------- */
+function saveUser(user) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+}
+
+function loadUser() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  return raw ? JSON.parse(raw) : null;
+}
 
 /* ---------------------------
    LOGIN
@@ -12,12 +25,13 @@ export function login(email, password) {
 
   // Mock user object (replace with backend later)
   const user = {
+    id: crypto.randomUUID(),
     email,
     name: email.split("@")[0],
     token: "mock-token",
   };
 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+  saveUser(user);
 
   return { ok: true, user };
 }
@@ -31,12 +45,13 @@ export function signup(email, password, name) {
   }
 
   const user = {
+    id: crypto.randomUUID(),
     email,
     name,
     token: "mock-token",
   };
 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+  saveUser(user);
 
   return { ok: true, user };
 }
@@ -45,8 +60,7 @@ export function signup(email, password, name) {
    SESSION
 ---------------------------- */
 export function getSession() {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  return raw ? JSON.parse(raw) : null;
+  return loadUser();
 }
 
 /* ---------------------------
