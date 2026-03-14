@@ -1,71 +1,38 @@
-// /scripts/auth.js
-// Pure localStorage mock auth module
+import { login, signup } from "/scripts/auth.js";
 
-const STORAGE_KEY = "beltHubUser";
+const params = new URLSearchParams(window.location.search);
+const mode = params.get("mode") || "login";
 
-/* ---------------------------
-   HELPERS
----------------------------- */
-function saveUser(user) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+const title = document.getElementById("auth-title");
+const switchLink = document.getElementById("switch-link");
+const signupExtra = document.getElementById("signup-extra");
+const btn = document.getElementById("btn-auth");
+
+if (mode === "signup") {
+  title.textContent = "Create Account";
+  signupExtra.style.display = "block";
+  switchLink.textContent = "Already have an account? Log in";
+  switchLink.href = "auth.html?mode=login";
+} else {
+  title.textContent = "Sign In";
+  signupExtra.style.display = "none";
+  switchLink.textContent = "Need an account? Sign up";
+  switchLink.href = "auth.html?mode=signup";
 }
 
-function loadUser() {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  return raw ? JSON.parse(raw) : null;
-}
+btn.addEventListener("click", () => {
+  const email = document.getElementById("auth-email").value;
+  const password = document.getElementById("auth-password").value;
+  const name = document.getElementById("auth-name")?.value;
 
-/* ---------------------------
-   LOGIN
----------------------------- */
-export function login(email, password) {
-  if (!email || !password) {
-    return { ok: false, error: "Missing fields" };
+  const res = mode === "signup"
+    ? signup(email, password, name)
+    : login(email, password);
+
+  if (!res.ok) {
+    alert(res.error);
+    return;
   }
 
-  // Mock user object (replace with backend later)
-  const user = {
-    id: crypto.randomUUID(),
-    email,
-    name: email.split("@")[0],
-    token: "mock-token",
-  };
-
-  saveUser(user);
-
-  return { ok: true, user };
-}
-
-/* ---------------------------
-   SIGNUP
----------------------------- */
-export function signup(email, password, name) {
-  if (!email || !password || !name) {
-    return { ok: false, error: "Missing fields" };
-  }
-
-  const user = {
-    id: crypto.randomUUID(),
-    email,
-    name,
-    token: "mock-token",
-  };
-
-  saveUser(user);
-
-  return { ok: true, user };
-}
-
-/* ---------------------------
-   SESSION
----------------------------- */
-export function getSession() {
-  return loadUser();
-}
-
-/* ---------------------------
-   LOGOUT
----------------------------- */
-export function logout() {
-  localStorage.removeItem(STORAGE_KEY);
-}
+  window.location.href = "index.html";
+});
