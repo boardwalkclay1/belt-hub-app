@@ -1,26 +1,13 @@
-let stream = null;
+import { api } from "/scripts/modules/api.js";
 
-export async function startCamera(videoEl) {
-  try {
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "environment" }
-    });
-    videoEl.srcObject = stream;
-    await videoEl.play();
-    return { ok: true };
-  } catch (err) {
-    return { ok: false, error: err.message };
+document.getElementById("btn-mock-scan").addEventListener("click", async () => {
+  const res = await api("/bikes-scan", "POST", { qr: "14" });
+
+  if (!res.ok) {
+    alert(res.error);
+    return;
   }
-}
 
-export function stopCamera() {
-  if (!stream) return;
-  stream.getTracks().forEach(t => t.stop());
-  stream = null;
-}
-
-// Placeholder for real QR decoding
-export async function decodeFrame(videoEl) {
-  // This is where your backend or QR library will plug in.
-  return null;
-}
+  localStorage.setItem("currentBikeId", res.bikeId);
+  window.location.href = "ride.html";
+});
