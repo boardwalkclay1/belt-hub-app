@@ -1,10 +1,11 @@
 import { api } from "/scripts/modules/api.js";
+import { getSession } from "/scripts/auth.js";
 
 let rideStart;
 let rideTimerInterval;
 
 async function startRide() {
-  const user = JSON.parse(localStorage.getItem("beltHubUser"));
+  const user = getSession();
   const bikeId = localStorage.getItem("currentBikeId");
 
   await api("/rentals-start", "POST", {
